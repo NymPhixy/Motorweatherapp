@@ -30,6 +30,7 @@ Deze app is voorbereid voor Firebase Cloud Messaging (FCM) voor push notificatie
 ### 4. Update configuratie in de code
 
 #### In `src/firebase.js`:
+
 Vervang de volgende waardes:
 
 ```javascript
@@ -46,6 +47,7 @@ const VAPID_KEY = "JOUW_VAPID_PUBLIC_KEY";
 ```
 
 #### In `public/firebase-messaging-sw.js`:
+
 Vervang met dezelfde `firebaseConfig`:
 
 ```javascript
@@ -69,6 +71,7 @@ if ("serviceWorker" in navigator) {
 ### 6. Test notificaties
 
 Open de browser console en zoek naar:
+
 ```
 FCM Token: [een lange string]
 ```
@@ -93,18 +96,18 @@ Voor automatische weerupdates moet je server-side code schrijven die:
 Voorbeeld met Node.js:
 
 ```javascript
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountKey)
+  credential: admin.credential.cert(serviceAccountKey),
 });
 
 const message = {
   notification: {
-    title: 'Motor Ride Weather',
-    body: 'Groningen: 18°C, droog weer, prima om te rijden'
+    title: "Motor Ride Weather",
+    body: "Groningen: 18°C, droog weer, prima om te rijden",
   },
-  token: usersFcmToken
+  token: usersFcmToken,
 };
 
 admin.messaging().send(message);
@@ -119,6 +122,7 @@ admin.messaging().send(message);
 ## Privacy & GDPR
 
 Let op: FCM tokens zijn persoonlijke data. Je moet:
+
 - Toestemming vragen voordat je tokens opslaat
 - Gebruikers de mogelijkheid geven om notificaties uit te schakelen
 - Tokens verwijderen als gebruiker uitschrijft

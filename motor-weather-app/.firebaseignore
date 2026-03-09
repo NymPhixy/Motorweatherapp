@@ -1,0 +1,21 @@
+# Firebase
+.firebase/
+.firebaserc
+
+# Dist files (generated on deploy)
+dist/
+
+# Node modules
+node_modules/
+
+# Local env files
+.env.local
+.env.*.local
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

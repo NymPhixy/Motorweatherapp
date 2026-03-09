@@ -85,7 +85,10 @@ function WeatherCard({
         </p>
 
         {fcmToken ? (
-          <p className="notification-status" style={{ fontSize: "0.75rem", wordBreak: "break-all" }}>
+          <p
+            className="notification-status"
+            style={{ fontSize: "0.75rem", wordBreak: "break-all" }}
+          >
             FCM token: {fcmToken.substring(0, 20)}...
           </p>
         ) : null}

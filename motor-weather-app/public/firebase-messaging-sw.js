@@ -1,5 +1,9 @@
-importScripts("https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js",
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js",
+);
 
 // TODO: Vervang met dezelfde Firebase config als in src/firebase.js
 const firebaseConfig = {
@@ -26,5 +30,8 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data,
   };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions,
+  );
 });
