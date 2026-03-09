@@ -1,16 +1,42 @@
-# React + Vite
+# Motor Ride Weather
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Mobile-first React app die motorrijders snel laat zien of het weer geschikt is om te rijden.
 
-Currently, two official plugins are available:
+## Wat werkt nu
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- MVP interface met duidelijke volgorde: header, weer-illustratie, weerdata, ride advice, refresh knop.
+- Live weerdata via Open-Meteo (`temperature`, `precipitation`, `cloud cover`).
+- Ride advice met duidelijke status:
+  - 🟢 Perfect weather to ride
+  - 🟡 Good weather but be careful
+  - 🔴 Not recommended today
+- Locatie via browser geolocation (`watchPosition`) zodat de data actueel blijft.
+- Stad/dorp weergave via reverse geocoding.
+- Fallbacks voor robuust gedrag:
+  - Geen geolocatie toestemming → standaardlocatie
+  - Plaatsnaam-service faalt → weerdata blijft zichtbaar
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + Vite
+- Open-Meteo Forecast API
+- OpenStreetMap Nominatim (reverse geocoding)
 
-## Expanding the ESLint configuration
+## Run lokaal
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+Open daarna de URL uit je terminal (meestal `http://localhost:5173` of `http://localhost:5174`).
+
+## Build
+
+```bash
+npm run build
+```
+
+## Korte release note
+
+Deze release vervangt de standaard Vite-startpagina door een complete Motor Ride Weather MVP met component-architectuur, live locatieverversing, plaatsnaamweergave en verbeterde foutafhandeling rondom API-calls.

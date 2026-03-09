@@ -1,5 +1,5 @@
 const buildApiUrl = (latitude, longitude) =>
-  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,precipitation,cloud_cover&timezone=auto`;
+  `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,precipitation,cloud_cover,weather_code&timezone=auto`;
 
 const buildReverseGeocodeUrl = (latitude, longitude) =>
   `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2&accept-language=nl`;
@@ -23,6 +23,7 @@ export async function getCurrentWeather(latitude, longitude) {
     temperature: Math.round(current.temperature_2m),
     precipitation: Number(current.precipitation.toFixed(1)),
     cloudCover: Math.round(current.cloud_cover),
+    weatherCode: current.weather_code,
   };
 }
 
