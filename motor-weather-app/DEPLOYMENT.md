@@ -25,6 +25,7 @@ firebase init hosting
 ```
 
 Kies:
+
 - "Use an existing project" → selecteer je Firebase project
 - Public directory: `dist`
 - Single-page app: `Yes`
@@ -98,12 +99,15 @@ Dan wordt je app automatisch gedeployed bij elke push naar main.
 ## Troubleshooting
 
 **"Project not found"**
+
 - Run `firebase use --add` en selecteer je project
 
 **"dist folder not found"**
+
 - Zorg dat je eerst `npm run build` hebt gedraaid
 
 **Service worker errors**
+
 - Check of alle paden correct zijn in `firebase.json`
 - Verifieer dat `sw.js` en `firebase-messaging-sw.js` in `public/` staan
 
