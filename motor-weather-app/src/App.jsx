@@ -370,7 +370,14 @@ function App() {
   return (
     <main className="app">
       <header className="app-header">
-        <h1>Motor Ride Weather</h1>
+        <div className="app-title-row">
+          <img
+            src="/motor-weather-logo.svg"
+            alt="Motor Ride Weather logo"
+            className="app-logo"
+          />
+          <h1>Motor Ride Weather</h1>
+        </div>
         <p>Check snel of dit een goede dag is om te rijden.</p>
       </header>
 

@@ -1,5 +1,10 @@
 const CACHE_NAME = "motor-weather-cache-v1";
-const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest"];
+const APP_SHELL = [
+  "/",
+  "/index.html",
+  "/manifest.webmanifest",
+  "/motor-weather-logo.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -59,8 +64,8 @@ self.addEventListener("message", (event) => {
   const { title, body } = payload;
   self.registration.showNotification(title, {
     body,
-    icon: "/vite.svg",
-    badge: "/vite.svg",
+    icon: "/motor-weather-logo.svg",
+    badge: "/motor-weather-logo.svg",
   });
 });
 
@@ -81,8 +86,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || "Motor Ride Weather", {
       body: data.body || "Nieuwe weerupdate beschikbaar.",
-      icon: "/vite.svg",
-      badge: "/vite.svg",
+      icon: "/motor-weather-logo.svg",
+      badge: "/motor-weather-logo.svg",
     }),
   );
 });
