@@ -27,24 +27,22 @@ Deze app is voorbereid voor Firebase Cloud Messaging (FCM) voor push notificatie
 4. Klik **Generate key pair**
 5. Kopieer de **Key pair** (VAPID public key)
 
-### 4. Update configuratie in de code
+### 4. Voeg environment variabelen toe
 
-#### In `src/firebase.js`:
+1. Maak een kopie van `.env.example` naar `.env`
+2. Vul in `.env` de volgende waarden in met je Firebase gegevens:
 
-Vervang de volgende waardes:
-
-```javascript
-const firebaseConfig = {
-  apiKey: "JOUW_API_KEY",
-  authDomain: "JOUW_PROJECT_ID.firebaseapp.com",
-  projectId: "JOUW_PROJECT_ID",
-  storageBucket: "JOUW_PROJECT_ID.appspot.com",
-  messagingSenderId: "JOUW_SENDER_ID",
-  appId: "JOUW_APP_ID",
-};
-
-const VAPID_KEY = "JOUW_VAPID_PUBLIC_KEY";
+```env
+VITE_FIREBASE_API_KEY=JOUW_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN=JOUW_PROJECT_ID.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=JOUW_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET=JOUW_PROJECT_ID.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=JOUW_SENDER_ID
+VITE_FIREBASE_APP_ID=JOUW_APP_ID
+VITE_FIREBASE_VAPID_KEY=JOUW_VAPID_PUBLIC_KEY
 ```
+
+`src/firebase.js` leest deze waarden automatisch via `import.meta.env`.
 
 #### In `public/firebase-messaging-sw.js`:
 

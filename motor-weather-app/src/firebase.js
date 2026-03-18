@@ -1,24 +1,67 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-// TODO: Vervang deze configuratie met jouw Firebase project config
-// Ga naar Firebase Console > Project Settings > General > Your apps
+const env = import.meta.env;
+
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID,
 };
 
-// TODO: Vervang met jouw VAPID key (Web Push certificates)
-// Ga naar Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
-const VAPID_KEY = "YOUR_VAPID_PUBLIC_KEY";
+const VAPID_KEY = env.VITE_FIREBASE_VAPID_KEY;
+
+let hasWarnedMissingFirebaseConfig = false;
+let hasWarnedMissingVapidKey = false;
+
+function isValidFirebaseConfigValue(value) {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return false;
+  }
+
+  return !trimmedValue.startsWith("YOUR_");
+}
+
+function hasFirebaseConfig() {
+  return Object.values(firebaseConfig).every((value) =>
+    isValidFirebaseConfigValue(value),
+  );
+}
+
+function isValidVapidKey(value) {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const trimmedValue = value.trim();
+  const isPlaceholder = trimmedValue === "YOUR_VAPID_PUBLIC_KEY";
+  const looksLikeBase64Url = /^[A-Za-z0-9_-]+$/.test(trimmedValue);
+
+  return trimmedValue.length > 0 && !isPlaceholder && looksLikeBase64Url;
+}
 
 let messaging = null;
 
 export function initializeFirebaseMessaging() {
+  if (!hasFirebaseConfig()) {
+    if (!hasWarnedMissingFirebaseConfig) {
+      console.warn(
+        "Firebase config ontbreekt. Stel VITE_FIREBASE_* variabelen in je .env-bestand in en herstart de dev server.",
+      );
+      hasWarnedMissingFirebaseConfig = true;
+    }
+    return null;
+  }
+
   try {
     const app = initializeApp(firebaseConfig);
     messaging = getMessaging(app);
@@ -32,6 +75,16 @@ export function initializeFirebaseMessaging() {
 export async function requestNotificationToken() {
   if (!messaging) {
     console.warn("Firebase Messaging not initialized");
+    return null;
+  }
+
+  if (!isValidVapidKey(VAPID_KEY)) {
+    if (!hasWarnedMissingVapidKey) {
+      console.warn(
+        "Ongeldige of ontbrekende VAPID key. Stel VITE_FIREBASE_VAPID_KEY in met je Web Push public key.",
+      );
+      hasWarnedMissingVapidKey = true;
+    }
     return null;
   }
 

@@ -1,0 +1,10 @@
+[build]
+  base = "motor-weather-app"
+  command = "npm run build"
+  publish = "dist"
+
+# Keep SPA routes working on refresh/direct link.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

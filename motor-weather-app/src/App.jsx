@@ -180,29 +180,73 @@ function App() {
       return;
     }
 
-    const watcherId = navigator.geolocation.watchPosition(
-      (position) => {
-        const nextCoordinates = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
+    let watcherId = null;
+    let isActive = true;
 
-        setCoordinates(nextCoordinates);
-        setLocationSource("live");
-        loadWeather(nextCoordinates);
-      },
-      () => {
-        setLocationSource("fallback");
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 30000,
-        timeout: 10000,
-      },
-    );
+    const startWatchingPosition = () => {
+      watcherId = navigator.geolocation.watchPosition(
+        (position) => {
+          const nextCoordinates = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+
+          setCoordinates(nextCoordinates);
+          setLocationSource("live");
+          loadWeather(nextCoordinates);
+        },
+        (geoError) => {
+          setLocationSource("fallback");
+
+          if (geoError?.code === geoError.PERMISSION_DENIED) {
+            setError(
+              "Geolocatie is geblokkeerd in je browser. Standaard locatie gebruikt.",
+            );
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 30000,
+          timeout: 10000,
+        },
+      );
+    };
+
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((permissionStatus) => {
+          if (!isActive) {
+            return;
+          }
+
+          if (permissionStatus.state === "denied") {
+            setLocationSource("fallback");
+            setError(
+              "Geolocatie is geblokkeerd in je browser. Standaard locatie gebruikt.",
+            );
+            return;
+          }
+
+          startWatchingPosition();
+        })
+        .catch(() => {
+          if (!isActive) {
+            return;
+          }
+
+          startWatchingPosition();
+        });
+    } else {
+      startWatchingPosition();
+    }
 
     return () => {
-      navigator.geolocation.clearWatch(watcherId);
+      isActive = false;
+
+      if (watcherId !== null) {
+        navigator.geolocation.clearWatch(watcherId);
+      }
     };
   }, []);
 
