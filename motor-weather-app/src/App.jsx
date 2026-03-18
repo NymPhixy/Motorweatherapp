@@ -41,6 +41,7 @@ function App() {
   const [lastNotificationAt, setLastNotificationAt] = useState("");
   const [serviceWorkerStatus, setServiceWorkerStatus] = useState("checking");
   const [fcmToken, setFcmToken] = useState(null);
+  const [notificationSupportHint, setNotificationSupportHint] = useState("");
 
   const latestCoordinatesRef = useRef(DEFAULT_COORDINATES);
 
@@ -131,6 +132,32 @@ function App() {
       .catch(() => {
         setServiceWorkerStatus("error");
       });
+  }, []);
+
+  useEffect(() => {
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    const isStandalone =
+      window.matchMedia?.("(display-mode: standalone)")?.matches ||
+      window.navigator.standalone === true;
+
+    if (isIOSDevice && !isStandalone) {
+      setNotificationSupportHint(
+        "Op iPhone werken pushnotificaties alleen als je de app via Safari toevoegt aan je beginscherm (iOS 16.4+). Open de app daarna vanaf het beginscherm.",
+      );
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      setNotificationSupportHint(
+        "Notificaties werken alleen op een beveiligde verbinding (HTTPS of localhost).",
+      );
+      return;
+    }
+
+    setNotificationSupportHint("");
   }, []);
 
   useEffect(() => {
@@ -283,6 +310,7 @@ function App() {
         serviceWorkerStatus={serviceWorkerStatus}
         fcmToken={fcmToken}
         lastNotificationAt={lastNotificationAt}
+        notificationSupportHint={notificationSupportHint}
         onRequestNotificationPermission={handleNotificationPermission}
         onNotificationIntervalChange={setNotificationInterval}
         onRefresh={() => loadWeather(coordinates)}

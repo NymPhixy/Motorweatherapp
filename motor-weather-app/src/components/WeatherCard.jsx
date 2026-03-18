@@ -13,11 +13,17 @@ function WeatherCard({
   serviceWorkerStatus,
   fcmToken,
   lastNotificationAt,
+  notificationSupportHint,
   onRequestNotificationPermission,
   onNotificationIntervalChange,
 }) {
   const locationText =
     locationSource === "live" ? "Jouw locatie" : "Standaard locatie";
+
+  const notificationStatusText =
+    notificationPermission === "unsupported"
+      ? "Niet ondersteund"
+      : notificationPermission;
 
   return (
     <section className="weather-card" aria-live="polite">
@@ -74,11 +80,12 @@ function WeatherCard({
         </button>
 
         <p className="notification-status">
-          Status notificaties:{" "}
-          {notificationPermission === "unsupported"
-            ? "Niet ondersteund"
-            : notificationPermission}
+          Status notificaties: {notificationStatusText}
         </p>
+
+        {notificationSupportHint ? (
+          <p className="notification-status">Tip: {notificationSupportHint}</p>
+        ) : null}
 
         <p className="notification-status">
           Service worker: {serviceWorkerStatus}
