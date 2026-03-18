@@ -42,32 +42,38 @@ function App() {
   const [serviceWorkerStatus, setServiceWorkerStatus] = useState("checking");
   const [fcmToken, setFcmToken] = useState(null);
   const [notificationSupportHint, setNotificationSupportHint] = useState("");
+  const [isSendingTestNotification, setIsSendingTestNotification] =
+    useState(false);
 
   const latestCoordinatesRef = useRef(DEFAULT_COORDINATES);
 
   const sendWeatherNotification = async (weatherData, placeName) => {
     if (typeof Notification === "undefined") {
-      return;
+      return false;
     }
 
     if (Notification.permission !== "granted") {
-      return;
+      return false;
     }
 
     const advice = getRideAdvice(weatherData, false, "");
     const messageBody = `${placeName}: ${weatherData.temperature}°C, ${weatherData.precipitation} mm regen, ${weatherData.cloudCover}% bewolking. ${advice.message}`;
 
     if ("serviceWorker" in navigator) {
-      const registration = await navigator.serviceWorker.ready;
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
 
-      if (registration.active) {
-        registration.active.postMessage({
-          type: "SHOW_WEATHER_NOTIFICATION",
-          title: "Motor Ride Weather update",
-          body: messageBody,
-        });
-        setLastNotificationAt(new Date().toLocaleString("nl-NL"));
-        return;
+        if (registration?.active) {
+          registration.active.postMessage({
+            type: "SHOW_WEATHER_NOTIFICATION",
+            title: "Motor Ride Weather update",
+            body: messageBody,
+          });
+          setLastNotificationAt(new Date().toLocaleString("nl-NL"));
+          return true;
+        }
+      } catch {
+        // If service worker lookup fails, continue with Notification fallback.
       }
     }
 
@@ -76,6 +82,62 @@ function App() {
     });
 
     setLastNotificationAt(new Date().toLocaleString("nl-NL"));
+    return true;
+  };
+
+  const handleTriggerTestNotification = async () => {
+    setError("");
+    setIsSendingTestNotification(true);
+
+    try {
+      if (typeof Notification === "undefined") {
+        setNotificationPermission("unsupported");
+        setError("Deze browser ondersteunt geen notificaties.");
+        return;
+      }
+
+      const currentPermission = Notification.permission;
+      setNotificationPermission(currentPermission);
+
+      if (currentPermission === "denied") {
+        setError(
+          "Notificaties zijn geblokkeerd in je browser. Sta ze toe via het slotje links van de adresbalk en laad de pagina opnieuw.",
+        );
+        return;
+      }
+
+      if (currentPermission !== "granted") {
+        const permission = await Notification.requestPermission();
+        setNotificationPermission(permission);
+
+        if (permission !== "granted") {
+          setError(
+            "Testmelding niet verzonden. Sta notificaties toe om meldingen te testen.",
+          );
+          return;
+        }
+      }
+
+      if (!weather) {
+        await loadWeather(latestCoordinatesRef.current, { notify: true });
+        return;
+      }
+
+      const wasSent = await sendWeatherNotification(
+        weather,
+        locationName || "Locatie onbekend",
+      );
+
+      if (!wasSent) {
+        setError(
+          "Testmelding niet verzonden. Controleer browserondersteuning en permissies.",
+        );
+      }
+    } catch {
+      setError("Testmelding kon niet worden verstuurd. Probeer opnieuw.");
+    } finally {
+      setIsSendingTestNotification(false);
+    }
   };
 
   const loadWeather = async (
@@ -125,9 +187,12 @@ function App() {
       return;
     }
 
-    navigator.serviceWorker.ready
-      .then(() => {
-        setServiceWorkerStatus("ready");
+    navigator.serviceWorker
+      .getRegistration()
+      .then((registration) => {
+        setServiceWorkerStatus(
+          registration?.active ? "ready" : "not-registered",
+        );
       })
       .catch(() => {
         setServiceWorkerStatus("error");
@@ -283,6 +348,16 @@ function App() {
       return;
     }
 
+    const currentPermission = Notification.permission;
+    setNotificationPermission(currentPermission);
+
+    if (currentPermission === "denied") {
+      setError(
+        "Notificaties zijn geblokkeerd in je browser. Sta ze toe via het slotje links van de adresbalk en laad de pagina opnieuw.",
+      );
+      return;
+    }
+
     const permission = await Notification.requestPermission();
     setNotificationPermission(permission);
 
@@ -313,6 +388,8 @@ function App() {
         notificationSupportHint={notificationSupportHint}
         onRequestNotificationPermission={handleNotificationPermission}
         onNotificationIntervalChange={setNotificationInterval}
+        onTriggerTestNotification={handleTriggerTestNotification}
+        isSendingTestNotification={isSendingTestNotification}
         onRefresh={() => loadWeather(coordinates)}
       />
     </main>

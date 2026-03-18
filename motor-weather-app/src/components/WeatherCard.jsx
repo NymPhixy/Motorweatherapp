@@ -16,6 +16,8 @@ function WeatherCard({
   notificationSupportHint,
   onRequestNotificationPermission,
   onNotificationIntervalChange,
+  onTriggerTestNotification,
+  isSendingTestNotification,
 }) {
   const locationText =
     locationSource === "live" ? "Jouw locatie" : "Standaard locatie";
@@ -25,8 +27,28 @@ function WeatherCard({
       ? "Niet ondersteund"
       : notificationPermission;
 
+  const serviceWorkerStatusText =
+    serviceWorkerStatus === "ready"
+      ? "Actief"
+      : serviceWorkerStatus === "not-registered"
+        ? "Niet geregistreerd (normaal tijdens lokaal testen)"
+        : serviceWorkerStatus === "unsupported"
+          ? "Niet ondersteund"
+          : serviceWorkerStatus === "checking"
+            ? "Controleren..."
+            : "Fout";
+
   return (
     <section className="weather-card" aria-live="polite">
+      <button
+        className="test-notification-button"
+        type="button"
+        onClick={onTriggerTestNotification}
+        disabled={isSendingTestNotification}
+      >
+        {isSendingTestNotification ? "Bezig..." : "Test melding"}
+      </button>
+
       <WeatherIllustration weather={weather} />
 
       <p className="location-label">
@@ -83,12 +105,19 @@ function WeatherCard({
           Status notificaties: {notificationStatusText}
         </p>
 
+        {notificationPermission === "denied" ? (
+          <p className="notification-status">
+            Tip: sta notificaties toe via het slotje naast de URL en laad daarna
+            de pagina opnieuw.
+          </p>
+        ) : null}
+
         {notificationSupportHint ? (
           <p className="notification-status">Tip: {notificationSupportHint}</p>
         ) : null}
 
         <p className="notification-status">
-          Service worker: {serviceWorkerStatus}
+          Service worker: {serviceWorkerStatusText}
         </p>
 
         {fcmToken ? (

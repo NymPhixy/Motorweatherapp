@@ -14,7 +14,6 @@ const firebaseConfig = {
 
 const VAPID_KEY = env.VITE_FIREBASE_VAPID_KEY;
 
-let hasWarnedMissingFirebaseConfig = false;
 let hasWarnedMissingVapidKey = false;
 
 function isValidFirebaseConfigValue(value) {
@@ -53,12 +52,7 @@ let messaging = null;
 
 export function initializeFirebaseMessaging() {
   if (!hasFirebaseConfig()) {
-    if (!hasWarnedMissingFirebaseConfig) {
-      console.warn(
-        "Firebase config ontbreekt. Stel VITE_FIREBASE_* variabelen in je .env-bestand in en herstart de dev server.",
-      );
-      hasWarnedMissingFirebaseConfig = true;
-    }
+    // Firebase is optional. Skip messaging silently when env vars are absent.
     return null;
   }
 
