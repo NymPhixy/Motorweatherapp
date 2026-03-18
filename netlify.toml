@@ -1,6 +1,7 @@
 [build]
-  command = "npm --prefix motor-weather-app install; npm --prefix motor-weather-app run build"
-  publish = "motor-weather-app/dist"
+  base = "motor-weather-app"
+  command = "npm run build"
+  publish = "dist"
 
 # Keep SPA routes working on refresh/direct link.
 [[redirects]]
