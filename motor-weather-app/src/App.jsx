@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import WeatherCard from "./components/WeatherCard";
 import { getCurrentWeather, getLocationName } from "./weatherApi";
-import { getRideAdvice } from "./components/RideAdvice";
+import { getRideAdvice } from "./helpers/getRideAdvice";
 import {
   initializeFirebaseMessaging,
   requestNotificationToken,
@@ -22,12 +22,58 @@ const NOTIFICATION_INTERVALS = {
 };
 
 function App() {
-  const [weather, setWeather] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [coordinates, setCoordinates] = useState(DEFAULT_COORDINATES);
-  const [locationSource, setLocationSource] = useState("fallback");
-  const [locationName, setLocationName] = useState("Groningen");
+  const [weatherState, setWeatherState] = useState({
+    weather: null,
+    isLoading: false,
+    error: "",
+    coordinates: DEFAULT_COORDINATES,
+    locationSource: "fallback",
+    locationName: "Groningen",
+  });
+  const {
+    weather,
+    isLoading,
+    error,
+    coordinates,
+    locationSource,
+    locationName,
+  } = weatherState;
+  const setWeather = (nextWeather) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      weather: nextWeather,
+    }));
+  };
+  const setIsLoading = (nextIsLoading) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      isLoading: nextIsLoading,
+    }));
+  };
+  const setError = (nextError) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      error: nextError,
+    }));
+  };
+  const setCoordinates = (nextCoordinates) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      coordinates: nextCoordinates,
+    }));
+  };
+  const setLocationSource = (nextLocationSource) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      locationSource: nextLocationSource,
+    }));
+  };
+  const setLocationName = (nextLocationName) => {
+    setWeatherState((previousState) => ({
+      ...previousState,
+      locationName: nextLocationName,
+    }));
+  };
   const [notificationInterval, setNotificationInterval] = useState(() => {
     return localStorage.getItem("weatherNotificationInterval") || "3h";
   });
